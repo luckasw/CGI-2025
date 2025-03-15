@@ -1,5 +1,6 @@
 package ee.wihler.backend.services;
 
+import ee.wihler.backend.dtos.SeatSuggestionRequest;
 import ee.wihler.backend.entities.Plane;
 import ee.wihler.backend.entities.Seat;
 import ee.wihler.backend.repositories.FlightRepository;
@@ -15,22 +16,96 @@ public class SeatService {
     @Autowired
     private PlaneRepository planeRepository;
 
-    @Autowired
-    private FlightRepository flightRepository;
+    public List<List<Seat>> getSeating(Plane plane) {
+        List<List<Seat>> seats = new ArrayList<>();
+        for (int row = 1; row <= plane.getRows(); row++) {
+            List<Seat> rowSeats = new ArrayList<>();
+            for (int column = 1; column <= plane.getSeatsPerRow(); column++) {
+                rowSeats.add(new Seat(row, column, Math.random() < 0.5, false));
+            }
+            seats.add(rowSeats);
+        }
 
-    public List<Seat> getSeating(Long id) {
-        List<Seat> seats = new ArrayList<>();
+        return seats;
+    }
+
+    public List<List<Seat>> getSeatingSuggestion(
+        Long id,
+        SeatSuggestionRequest request
+    ) {
         Plane plane = planeRepository.findById(id).orElse(null);
         if (plane == null) {
             return null;
         }
 
-        for (int row = 1; row <= plane.getRows(); row++) {
-            for (int column = 1; column <= plane.getSeatsPerRow(); column++) {
-                seats.add(new Seat(row, column, Math.random() < 0.5));
+        List<List<Seat>> seating = getSeating(plane);
+        int rows = plane.getRows();
+        int columns = plane.getSeatsPerRow();
+
+        if (request.getTickets() > 1 && request.getTogether()) {
+            for (List<Seat> seatRow : seating) {
+                int freeSeatsInRow = 0;
+                int startIndex = -1;
+
+                for (int i = 0; i < columns; i++) {
+                    if (!seatRow.get(i).isOccupied()) {
+                        if (freeSeatsInRow == 0) {
+                            startIndex = i;
+                        }
+                        freeSeatsInRow++;
+                    } else {
+                        freeSeatsInRow = 0;
+                        startIndex = -1;
+                    }
+
+                    if (freeSeatsInRow >= request.getTickets()) {
+                        for (int j = 0; j < request.getTickets(); j++) {
+                            Seat seat = seatRow.get(startIndex + j);
+                            int row = seat.getRow();
+                            int column = seat.getColumn();
+                            if (fulfills(request, row, column, rows, columns)) {
+                                seat.setSuggested(true);
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        } else {
+            for (List<Seat> seatRow : seating) {
+                for (Seat seat : seatRow) {
+                    if (!seat.isOccupied()) {
+                        int row = seat.getRow();
+                        int column = seat.getColumn();
+                        if (fulfills(request, row, column, rows, columns)) {
+                            seat.setSuggested(true);
+                        }
+                    }
+                }
             }
         }
 
-        return seats;
+        return seating;
+    }
+
+    private Boolean fulfills(
+        SeatSuggestionRequest request,
+        int row,
+        int column,
+        int rows,
+        int columns
+    ) {
+        Boolean fulfilled = true;
+        if (request.getNearWindow() && column != 1 && column != columns) {
+            fulfilled = false;
+        }
+        if ((request.getMoreLegSpace() && row != (rows / 2)) || row == 1) {
+            fulfilled = false;
+        }
+        if (request.getNearExit() && row > rows / 3) {
+            fulfilled = false;
+        }
+
+        return fulfilled;
     }
 }
