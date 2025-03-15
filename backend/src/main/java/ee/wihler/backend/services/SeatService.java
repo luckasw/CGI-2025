@@ -1,6 +1,7 @@
 package ee.wihler.backend.services;
 
 import ee.wihler.backend.dtos.SeatSuggestionRequest;
+import ee.wihler.backend.dtos.SeatSuggestionResponse;
 import ee.wihler.backend.entities.Plane;
 import ee.wihler.backend.entities.Seat;
 import ee.wihler.backend.repositories.FlightRepository;
@@ -21,7 +22,9 @@ public class SeatService {
         for (int row = 1; row <= plane.getRows(); row++) {
             List<Seat> rowSeats = new ArrayList<>();
             for (int column = 1; column <= plane.getSeatsPerRow(); column++) {
-                rowSeats.add(new Seat(row, column, Math.random() < 0.5, false));
+                rowSeats.add(
+                    new Seat(row, column, Math.random() < 0.5, false, false)
+                );
             }
             seats.add(rowSeats);
         }
@@ -29,7 +32,7 @@ public class SeatService {
         return seats;
     }
 
-    public List<List<Seat>> getSeatingSuggestion(
+    public SeatSuggestionResponse getSeatingSuggestion(
         Long id,
         SeatSuggestionRequest request
     ) {
@@ -57,7 +60,7 @@ public class SeatService {
                         freeSeatsInRow = 0;
                         startIndex = -1;
                     }
-
+                    int foundSeats = 0;
                     if (freeSeatsInRow >= request.getTickets()) {
                         for (int j = 0; j < request.getTickets(); j++) {
                             Seat seat = seatRow.get(startIndex + j);
@@ -65,13 +68,18 @@ public class SeatService {
                             int column = seat.getColumn();
                             if (fulfills(request, row, column, rows, columns)) {
                                 seat.setSuggested(true);
+                                seat.setSelected(true);
+                                foundSeats++;
                             }
                         }
-                        break;
+                        if (foundSeats == request.getTickets()) {
+                            return new SeatSuggestionResponse(seating, true);
+                        }
                     }
                 }
             }
         } else {
+            int foundSeats = 0;
             for (List<Seat> seatRow : seating) {
                 for (Seat seat : seatRow) {
                     if (!seat.isOccupied()) {
@@ -79,13 +87,21 @@ public class SeatService {
                         int column = seat.getColumn();
                         if (fulfills(request, row, column, rows, columns)) {
                             seat.setSuggested(true);
+                            seat.setSelected(true);
+                            foundSeats++;
+                            if (foundSeats == request.getTickets()) {
+                                return new SeatSuggestionResponse(
+                                    seating,
+                                    true
+                                );
+                            }
                         }
                     }
                 }
             }
         }
 
-        return seating;
+        return new SeatSuggestionResponse(seating, false);
     }
 
     private Boolean fulfills(

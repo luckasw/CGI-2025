@@ -1,6 +1,7 @@
 package ee.wihler.backend.controllers;
 
 import ee.wihler.backend.dtos.SeatSuggestionRequest;
+import ee.wihler.backend.dtos.SeatSuggestionResponse;
 import ee.wihler.backend.entities.Seat;
 import ee.wihler.backend.services.SeatService;
 import java.util.List;
@@ -19,7 +20,7 @@ public class SeatController {
     private SeatService seatService;
 
     @PostMapping("/{id}")
-    public List<List<Seat>> getSeating(
+    public SeatSuggestionResponse getSeating(
         @PathVariable Long id,
         @RequestBody SeatSuggestionRequest request
     ) {

@@ -6,12 +6,20 @@ public class Seat {
     private int column;
     private boolean occupied;
     private boolean suggested;
+    private boolean selected;
 
-    public Seat(int row, int column, boolean occupied, boolean suggested) {
+    public Seat(
+        int row,
+        int column,
+        boolean occupied,
+        boolean suggested,
+        boolean selected
+    ) {
         this.row = row;
         this.column = column;
         this.occupied = occupied;
         this.suggested = suggested;
+        this.selected = selected;
     }
 
     public int getRow() {
@@ -30,7 +38,15 @@ public class Seat {
         return suggested;
     }
 
+    public boolean isSelected() {
+        return selected;
+    }
+
     public void setSuggested(boolean suggested) {
         this.suggested = suggested;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }
