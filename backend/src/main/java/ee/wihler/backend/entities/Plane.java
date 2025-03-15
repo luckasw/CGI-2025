@@ -17,5 +17,6 @@ public class Plane {
     private Long id;
 
     private String model;
-    private int capacity;
+    private int rows;
+    private int seatsPerRow;
 }

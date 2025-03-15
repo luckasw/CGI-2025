@@ -1,7 +1,8 @@
 CREATE TABLE planes (
     id SERIAL PRIMARY KEY,
     model VARCHAR(255) NOT NULL UNIQUE,
-    capacity INT NOT NULL CHECK (capacity > 0)
+    rows INT NOT NULL CHECK (rows > 0),
+    seats_per_row INT NOT NULL CHECK (seats_per_row > 0)
 );
 
 CREATE TABLE flights (
