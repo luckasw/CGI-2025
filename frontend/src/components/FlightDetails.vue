@@ -44,10 +44,10 @@ const bookingUrl = computed(() =>
         ? {
               path: `/booking/${flight.value.id}/${flight.value.planeId}/${numTickets.value}`,
               query: {
-                  nearWindow: suggestionFilters.value.nearWindow,
-                  moreLegSpace: suggestionFilters.value.moreLegSpace,
-                  nearExit: suggestionFilters.value.nearExit,
-                  together: suggestionFilters.value.together,
+                  nearWindow: suggestionFilters.value.nearWindow.toString(),
+                  moreLegSpace: suggestionFilters.value.moreLegSpace.toString(),
+                  nearExit: suggestionFilters.value.nearExit.toString(),
+                  together: suggestionFilters.value.together.toString(),
               },
           }
         : {},

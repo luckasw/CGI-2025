@@ -15,7 +15,7 @@ const route = useRoute();
 
 const flightId = ref(route.params.flightId);
 const tickets = ref(Number(route.params.tickets));
-const planeId = ref(route.params.planeId);
+const planeId = ref(Number(route.params.planeId));
 
 const suggestionFilters = ref({
     nearWindow: route.query.nearWindow === "true",
