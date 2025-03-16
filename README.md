@@ -1,4 +1,5 @@
 # CGI proovitöö
+Live demo: [flights.wihler.ee](https://flights.wihler.ee)
 ## Käivitamine
 Lisa .env failid backendi ja frontendi kaustadesse
 
