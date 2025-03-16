@@ -56,6 +56,9 @@ const bookingUrl = computed(() =>
 const parseDate = (timestamp: string) =>
     new Date(timestamp).toLocaleDateString();
 
+const parseTime = (timestamp: string) =>
+    new Date(timestamp).toLocaleTimeString();
+
 onMounted(fetchFlight);
 </script>
 
@@ -65,11 +68,13 @@ onMounted(fetchFlight);
             <h2>{{ flight.origin }} - {{ flight.destination }}</h2>
             <p>
                 <strong>Departure:</strong>
-                {{ parseDate(flight.departureTime) }}
+                {{ parseDate(flight.departureTime) }} -
+                {{ parseTime(flight.departureTime) }}
             </p>
             <p>
                 <strong>Arrival:</strong>
-                {{ parseDate(flight.arrivalTime) }}
+                {{ parseDate(flight.arrivalTime) }} -
+                {{ parseTime(flight.arrivalTime) }}
             </p>
             <p><strong>Price per Ticket:</strong> ${{ flight.price }}</p>
 
@@ -109,7 +114,7 @@ onMounted(fetchFlight);
                     />
                     Near Exit
                 </label>
-                <label>
+                <label v-if="numTickets > 1">
                     <input
                         type="checkbox"
                         v-model="suggestionFilters.together"

@@ -76,6 +76,9 @@ const filteredFlights = computed(() => {
 const parseDate = (timestamp: string): string =>
     new Date(timestamp).toLocaleDateString();
 
+const parseTime = (timestamp: string): string =>
+    new Date(timestamp).toLocaleTimeString();
+
 onMounted(fetchFlights);
 </script>
 
@@ -88,16 +91,24 @@ onMounted(fetchFlights);
                     v-model="filters.destination"
                     placeholder="Destination"
                 />
-                <input type="date" v-model="filters.date" placeholder="Date" />
+                <label for="date-input">
+                    Departure Date
+                    <input
+                        type="date"
+                        v-model="filters.date"
+                        placeholder="Date"
+                        id="date-input"
+                    />
+                </label>
                 <input
                     type="number"
                     v-model="filters.minFlightTime"
-                    placeholder="Min Time"
+                    placeholder="Min flight time (minutes)"
                 />
                 <input
                     type="number"
                     v-model="filters.maxFlightTime"
-                    placeholder="Max Time"
+                    placeholder="Max flight time (minutes)"
                 />
                 <input
                     type="number"
@@ -126,6 +137,11 @@ onMounted(fetchFlights);
                                 <strong>Date:</strong>
                                 {{ parseDate(flight.departureTime) }} -
                                 {{ parseDate(flight.arrivalTime) }}
+                            </p>
+                            <p>
+                                <strong>Time:</strong>
+                                {{ parseTime(flight.departureTime) }} -
+                                {{ parseTime(flight.arrivalTime) }}
                             </p>
                             <p>
                                 <strong>Origin:</strong> {{ flight.origin }} |

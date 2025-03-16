@@ -74,6 +74,17 @@ const toggleSeatSelection = (seat: Seat) => {
         </div>
 
         <div v-if="seating.length > 0">
+            <p>
+                To choose a different seat, click on a selected seat to deselect
+                it.
+            </p>
+            <p>
+                White seats are available. Red seats are occupied. Blue seats
+                are selected. Light blue seats are suggested based on your
+                preferences and initially selected. If suggested seating can
+                only be found for some tickets then only those tickets will be
+                selected.
+            </p>
             <div class="column-letters">
                 <span class="row-number-placeholder"></span>
                 <template
